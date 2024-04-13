@@ -22,7 +22,7 @@ describe("login page", () => {
     //queryBy -> returns null if not found
     //findBy -> returns promise
     expect(screen.getByText("Sign in")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Username")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("username")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("password")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Log in" })).toBeInTheDocument();
     expect(

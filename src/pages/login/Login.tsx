@@ -1,8 +1,33 @@
-import { Card, Checkbox, Form, Input, Layout, Space, Button } from "antd";
+import {
+  Card,
+  Checkbox,
+  Form,
+  Input,
+  Layout,
+  Space,
+  Button,
+  Alert,
+} from "antd";
 import { LockFilled, UserOutlined, LockOutlined } from "@ant-design/icons";
 import Logo from "../../components/icons/Logo";
+import { useMutation } from "@tanstack/react-query";
+import { Credentials } from "../../types";
+import { login } from "../../http/api";
+
+const loginUser = async (userData: Credentials) => {
+  const { data } = await login(userData);
+  return data;
+};
 
 const LoginPage = () => {
+  const { mutate, isPending, isError } = useMutation({
+    mutationKey: ["login"],
+    mutationFn: loginUser,
+    onSuccess: async () => {
+      console.log("login successful");
+    },
+  });
+
   return (
     <>
       <Layout
@@ -34,9 +59,25 @@ const LoginPage = () => {
               </Space>
             }
           >
-            <Form initialValues={{ remember: true }}>
+            <Form
+              initialValues={{ remember: true }}
+              onFinish={(values) => {
+                mutate({
+                  email: values.username,
+                  password: values.password,
+                });
+              }}
+            >
+              {isError && (
+                <Alert
+                  message="Invalid credential"
+                  type="error"
+                  showIcon
+                  style={{ marginBottom: 24 }}
+                />
+              )}
               <Form.Item
-                name="Username"
+                name="username"
                 rules={[
                   {
                     required: true,
@@ -62,6 +103,13 @@ const LoginPage = () => {
                     required: true,
                     message: "Please provide your password!",
                   },
+                  {
+                    pattern: new RegExp(
+                      "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$"
+                    ),
+                    message:
+                      "[length: 6], [at least one letter], [at least one numbe]",
+                  },
                 ]}
               >
                 <Input.Password
@@ -81,6 +129,7 @@ const LoginPage = () => {
                   type="primary"
                   htmlType="submit"
                   style={{ width: "100%" }}
+                  loading={isPending}
                 >
                   Log in
                 </Button>
