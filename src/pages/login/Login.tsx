@@ -135,7 +135,7 @@ const LoginPage = () => {
                   },
                   {
                     pattern: new RegExp(
-                      "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$"
+                      "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{6,}$"
                     ),
                     message:
                       "[length: 6], [at least one letter], [at least one numbe]",
