@@ -3,6 +3,8 @@ import { Outlet } from "react-router-dom";
 import { self } from "../http/api";
 import { useAuthStore } from "../store";
 import { useEffect } from "react";
+import { LoadingOutlined } from "@ant-design/icons";
+import { Flex } from "antd";
 
 const getSelf = async () => {
   const { data } = await self();
@@ -14,6 +16,7 @@ const Root = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["self"],
     queryFn: getSelf,
+    retry: 1,
   });
 
   useEffect(() => {
@@ -23,7 +26,21 @@ const Root = () => {
   }, [data, setUser]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Flex
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <LoadingOutlined
+          style={{
+            fontSize: "50px",
+          }}
+        />
+      </Flex>
+    );
   }
 
   return <Outlet />;
