@@ -17,6 +17,7 @@ import {
   AccountBookOutlined,
   ShopOutlined,
   BellFilled,
+  DownOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
 import Logo from "../components/icons/Logo";
@@ -54,7 +55,8 @@ const items = [
 ];
 
 const Dashboard = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
+
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -70,9 +72,13 @@ const Dashboard = () => {
       <Layout style={{ minHeight: "100vh" }}>
         <Sider
           theme="light"
-          collapsible
+          collapsible={window.innerWidth > 769}
+          defaultCollapsed={window.innerWidth <= 768}
           collapsed={collapsed}
           onCollapse={(value) => setCollapsed(value)}
+          style={{
+            minWidth: "100px",
+          }}
         >
           <div className="logo">
             <Logo />
@@ -111,15 +117,28 @@ const Dashboard = () => {
                   }}
                   placement="bottomRight"
                 >
-                  <Avatar
+                  <Flex
+                    align="center"
+                    justify="center"
+                    gap={8}
                     style={{
-                      backgroundColor: "#fde3cf",
-                      color: "#f56a00",
                       cursor: "pointer",
                     }}
                   >
-                    U
-                  </Avatar>
+                    <Avatar
+                      style={{
+                        backgroundColor: "#fde3cf",
+                        color: "#f56a00",
+                      }}
+                    >
+                      U
+                    </Avatar>
+                    <DownOutlined
+                      style={{
+                        fontSize: "10px",
+                      }}
+                    />
+                  </Flex>
                 </Dropdown>
               </Space>
             </Flex>
