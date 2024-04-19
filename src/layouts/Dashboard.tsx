@@ -55,7 +55,7 @@ const items = [
 ];
 
 const Dashboard = () => {
-  const [collapsed, setCollapsed] = useState(true);
+  const [, setCollapsed] = useState(false);
 
   const {
     token: { colorBgContainer },
@@ -74,7 +74,6 @@ const Dashboard = () => {
           theme="light"
           collapsible={window.innerWidth > 769}
           defaultCollapsed={window.innerWidth <= 768}
-          collapsed={collapsed}
           onCollapse={(value) => setCollapsed(value)}
           style={{
             minWidth: "100px",
@@ -99,7 +98,10 @@ const Dashboard = () => {
             }}
           >
             <Flex gap="middle" align="start" justify="space-between">
-              <Badge text="Global" status="success" />
+              <Badge
+                text={user.role === "admin" ? "Admin" : user.tenant?.name}
+                status="success"
+              />
 
               <Space size={16}>
                 <Badge dot={true}>
