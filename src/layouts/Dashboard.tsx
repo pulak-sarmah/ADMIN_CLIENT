@@ -1,15 +1,27 @@
 import { Navigate, NavLink, Outlet } from "react-router-dom";
 import { useAuthStore } from "../store";
-import { Layout, Menu, theme } from "antd";
+import {
+  Avatar,
+  Badge,
+  Dropdown,
+  Flex,
+  Layout,
+  Menu,
+  Space,
+  theme,
+} from "antd";
 import {
   HomeOutlined,
   UserOutlined,
   ProductOutlined,
   AccountBookOutlined,
   ShopOutlined,
+  BellFilled,
 } from "@ant-design/icons";
 import { useState } from "react";
 import Logo from "../components/icons/Logo";
+import { useLogoutUser } from "../hooks/useUserlogout";
+
 const { Header, Content, Footer, Sider } = Layout;
 
 const items = [
@@ -48,7 +60,7 @@ const Dashboard = () => {
   } = theme.useToken();
 
   const { user } = useAuthStore();
-
+  const logoutUser = useLogoutUser();
   if (user === null) {
     return <Navigate to="/auth/login" replace={true} />;
   }
@@ -73,7 +85,45 @@ const Dashboard = () => {
           />
         </Sider>
         <Layout>
-          <Header style={{ padding: 0, background: colorBgContainer }} />
+          <Header
+            style={{
+              paddingLeft: "16px",
+              paddingRight: "16px",
+              background: colorBgContainer,
+            }}
+          >
+            <Flex gap="middle" align="start" justify="space-between">
+              <Badge text="Global" status="success" />
+
+              <Space size={16}>
+                <Badge dot={true}>
+                  <BellFilled style={{ cursor: "pointer" }} />
+                </Badge>
+                <Dropdown
+                  menu={{
+                    items: [
+                      {
+                        key: "logout",
+                        label: "Logout",
+                        onClick: () => logoutUser(),
+                      },
+                    ],
+                  }}
+                  placement="bottomRight"
+                >
+                  <Avatar
+                    style={{
+                      backgroundColor: "#fde3cf",
+                      color: "#f56a00",
+                      cursor: "pointer",
+                    }}
+                  >
+                    U
+                  </Avatar>
+                </Dropdown>
+              </Space>
+            </Flex>
+          </Header>
           <Content style={{ margin: "0 16px" }}>
             <Outlet />
           </Content>
