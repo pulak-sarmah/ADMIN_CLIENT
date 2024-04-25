@@ -22,6 +22,7 @@ import {
 import { useState } from "react";
 import Logo from "../components/icons/Logo";
 import { useLogoutUser } from "../hooks/useUserlogout";
+import { useLocation } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -56,7 +57,7 @@ const items = [
 
 const Dashboard = () => {
   const [, setCollapsed] = useState(false);
-
+  const location = useLocation();
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -85,6 +86,7 @@ const Dashboard = () => {
           <Menu
             theme="light"
             defaultSelectedKeys={["/"]}
+            selectedKeys={[location.pathname]}
             mode="inline"
             items={items}
           />
