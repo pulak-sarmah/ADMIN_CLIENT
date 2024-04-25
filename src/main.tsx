@@ -18,6 +18,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             colorPrimary: "#F65F42",
             colorLink: "#F65F42",
           },
+          components: {
+            Statistic: {
+              contentFontSize: 18,
+            },
+          },
         }}
       >
         <RouterProvider router={router} />
