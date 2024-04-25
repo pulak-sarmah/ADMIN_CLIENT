@@ -65,7 +65,9 @@ const Dashboard = () => {
   const { user } = useAuthStore();
   const logoutUser = useLogoutUser();
   if (user === null) {
-    return <Navigate to="/auth/login" replace={true} />;
+    return (
+      <Navigate to="/auth/login" state={{ from: location }} replace={true} />
+    );
   }
 
   return (
@@ -85,7 +87,6 @@ const Dashboard = () => {
           </div>
           <Menu
             theme="light"
-            defaultSelectedKeys={["/"]}
             selectedKeys={[location.pathname]}
             mode="inline"
             items={items}
