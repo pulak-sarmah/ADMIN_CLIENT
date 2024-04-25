@@ -72,8 +72,8 @@ const Dashboard = () => {
       <Layout style={{ minHeight: "100vh" }}>
         <Sider
           theme="light"
-          collapsible={window.innerWidth > 769}
-          defaultCollapsed={window.innerWidth <= 768}
+          collapsible={window.innerWidth > 768}
+          defaultCollapsed={window.innerWidth <= 840}
           onCollapse={(value) => setCollapsed(value)}
           style={{
             minWidth: "100px",
@@ -145,7 +145,7 @@ const Dashboard = () => {
               </Space>
             </Flex>
           </Header>
-          <Content style={{ margin: "0 16px" }}>
+          <Content style={{ margin: "24px 24px" }}>
             <Outlet />
           </Content>
           <Footer style={{ textAlign: "center" }}>Laziz Pizza ©2018</Footer>
