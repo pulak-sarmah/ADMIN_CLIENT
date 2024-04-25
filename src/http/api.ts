@@ -8,3 +8,5 @@ export const login = (Credentials: Credentials) =>
 export const self = () => api.get("/auth/self");
 
 export const logout = () => api.post("/auth/logout");
+
+export const getUsers = () => api.get("/users");
