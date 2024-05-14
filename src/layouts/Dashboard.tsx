@@ -26,43 +26,83 @@ import { useLocation } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const items = [
-  {
-    key: "/",
-    icon: <HomeOutlined />,
-    label: <NavLink to="/">Home</NavLink>,
-  },
-  {
-    key: "/users",
-    icon: <UserOutlined />,
-    label: <NavLink to="/users">Users</NavLink>,
-  },
-  {
-    key: "/resturants",
-    icon: <ShopOutlined />,
-    label: <NavLink to="/resturants">Resturants</NavLink>,
-  },
-  {
-    key: "/products",
-    icon: <ProductOutlined />,
-    label: <NavLink to="/products">Products</NavLink>,
-  },
+const getMenuItems = (role: string) => {
+  const baseItems = [
+    {
+      key: "/",
+      icon: <HomeOutlined />,
+      label: <NavLink to="/">Home</NavLink>,
+    },
+    {
+      key: "/resturants",
+      icon: <ShopOutlined />,
+      label: <NavLink to="/resturants">Resturants</NavLink>,
+    },
+    {
+      key: "/products",
+      icon: <ProductOutlined />,
+      label: <NavLink to="/products">Products</NavLink>,
+    },
 
-  {
-    key: "/promos",
-    icon: <AccountBookOutlined />,
-    label: <NavLink to="/promos">Promos</NavLink>,
-  },
-];
+    {
+      key: "/promos",
+      icon: <AccountBookOutlined />,
+      label: <NavLink to="/promos">Promos</NavLink>,
+    },
+  ];
+
+  if (role === "admin") {
+    const menus = [...baseItems];
+    menus.splice(1, 0, {
+      key: "/users",
+      icon: <UserOutlined />,
+      label: <NavLink to="/users">Users</NavLink>,
+    });
+    return menus;
+  }
+
+  return baseItems;
+};
+
+// const items = [
+//   {
+//     key: "/",
+//     icon: <HomeOutlined />,
+//     label: <NavLink to="/">Home</NavLink>,
+//   },
+//   {
+//     key: "/users",
+//     icon: <UserOutlined />,
+//     label: <NavLink to="/users">Users</NavLink>,
+//   },
+//   {
+//     key: "/resturants",
+//     icon: <ShopOutlined />,
+//     label: <NavLink to="/resturants">Resturants</NavLink>,
+//   },
+//   {
+//     key: "/products",
+//     icon: <ProductOutlined />,
+//     label: <NavLink to="/products">Products</NavLink>,
+//   },
+
+//   {
+//     key: "/promos",
+//     icon: <AccountBookOutlined />,
+//     label: <NavLink to="/promos">Promos</NavLink>,
+//   },
+// ];
 
 const Dashboard = () => {
+  const { user } = useAuthStore();
+  const items = getMenuItems(user?.role as string);
+
   const [, setCollapsed] = useState(false);
   const location = useLocation();
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  const { user } = useAuthStore();
   const logoutUser = useLogoutUser();
   if (user === null) {
     return (

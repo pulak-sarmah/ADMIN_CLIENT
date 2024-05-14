@@ -1,11 +1,12 @@
 import { Breadcrumb, Flex, Space, Table } from "antd";
 import { RightOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getUsers } from "../../http/api";
 import { LoadingOutlined } from "@ant-design/icons";
 import { User } from "../../types";
 import { ColumnsType } from "antd/es/table";
+import { useAuthStore } from "../../store";
 
 const columns: ColumnsType<User> = [
   {
@@ -51,6 +52,7 @@ const columns: ColumnsType<User> = [
 ];
 
 const Users = () => {
+  const { user } = useAuthStore();
   const {
     data: users,
     isLoading,
@@ -62,6 +64,10 @@ const Users = () => {
       return getUsers().then((res) => res.data);
     },
   });
+
+  if (user?.role !== "admin") {
+    return <Navigate to="/" replace={true} />;
+  }
 
   return (
     <>
