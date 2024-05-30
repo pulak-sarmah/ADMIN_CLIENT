@@ -7,6 +7,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { User } from "../../types";
 import { ColumnsType } from "antd/es/table";
 import { useAuthStore } from "../../store";
+import UserFilter from "./UserFilter";
 
 const columns: ColumnsType<User> = [
   {
@@ -104,6 +105,7 @@ const Users = () => {
             {error.message}
           </Flex>
         )}
+        <UserFilter />
         <Table columns={columns} dataSource={users} />
       </Space>
     </>

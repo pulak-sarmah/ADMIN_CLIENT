@@ -64,35 +64,6 @@ const getMenuItems = (role: string) => {
   return baseItems;
 };
 
-// const items = [
-//   {
-//     key: "/",
-//     icon: <HomeOutlined />,
-//     label: <NavLink to="/">Home</NavLink>,
-//   },
-//   {
-//     key: "/users",
-//     icon: <UserOutlined />,
-//     label: <NavLink to="/users">Users</NavLink>,
-//   },
-//   {
-//     key: "/resturants",
-//     icon: <ShopOutlined />,
-//     label: <NavLink to="/resturants">Resturants</NavLink>,
-//   },
-//   {
-//     key: "/products",
-//     icon: <ProductOutlined />,
-//     label: <NavLink to="/products">Products</NavLink>,
-//   },
-
-//   {
-//     key: "/promos",
-//     icon: <AccountBookOutlined />,
-//     label: <NavLink to="/promos">Promos</NavLink>,
-//   },
-// ];
-
 const Dashboard = () => {
   const { user } = useAuthStore();
   const items = getMenuItems(user?.role as string);
