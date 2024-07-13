@@ -35,7 +35,7 @@ const UserForm = () => {
               <Col span={12}>
                 <Form.Item
                   label="Last Name"
-                  name="LastName"
+                  name="lastName"
                   rules={[
                     {
                       required: true,
