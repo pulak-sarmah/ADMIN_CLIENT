@@ -10,7 +10,12 @@ import {
 } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import { Link, Navigate } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { createUser, getUsers } from "../../http/api";
 import { LoadingOutlined } from "@ant-design/icons";
 import { User } from "../../types";
@@ -90,7 +95,7 @@ const Users = () => {
   });
   const {
     data: users,
-    isLoading,
+    isFetching,
     isError,
     error,
   } = useQuery({
@@ -101,6 +106,7 @@ const Users = () => {
       ).toString();
       return getUsers(queryString).then((res) => res.data);
     },
+    placeholderData: keepPreviousData,
   });
 
   const onHandleSubmit = async () => {
@@ -127,7 +133,7 @@ const Users = () => {
           items={[{ title: <Link to="/">Dashboard</Link> }, { title: "Users" }]}
           separator=<RightOutlined />
         />
-        {isLoading && (
+        {isFetching && (
           <Flex
             justify="center"
             align="center"
