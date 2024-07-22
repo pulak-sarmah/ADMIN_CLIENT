@@ -9,7 +9,8 @@ export const self = () => api.get("/auth/self");
 
 export const logout = () => api.post("/auth/logout");
 
-export const getUsers = () => api.get("/users");
+export const getUsers = (queryString: string) =>
+  api.get(`/users?${queryString}`);
 
 export const createTenant = (tenant: CreateTenantData) =>
   api.post(`/tenants`, tenant);

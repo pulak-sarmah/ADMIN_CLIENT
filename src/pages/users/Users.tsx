@@ -10,13 +10,7 @@ import {
 } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import { Link, Navigate } from "react-router-dom";
-import {
-  Query,
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUser, getUsers } from "../../http/api";
 import { LoadingOutlined } from "@ant-design/icons";
 import { User } from "../../types";
@@ -26,6 +20,7 @@ import UserFilter from "./UserFilter";
 import { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import UserForm from "./forms/UserForm";
+import { PER_PAGE } from "../../constants";
 
 const columns: ColumnsType<User> = [
   {
@@ -77,6 +72,11 @@ const Users = () => {
     token: { colorBgLayout },
   } = theme.useToken();
 
+  const [queryParams, setQueryParams] = useState({
+    perPage: PER_PAGE,
+    currentPage: 1,
+  });
+
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { user } = useAuthStore();
 
@@ -94,9 +94,12 @@ const Users = () => {
     isError,
     error,
   } = useQuery({
-    queryKey: ["users"],
+    queryKey: ["users", queryParams],
     queryFn: async () => {
-      return getUsers().then((res) => res.data);
+      const queryString = new URLSearchParams(
+        queryParams as unknown as Record<string, string>
+      ).toString();
+      return getUsers(queryString).then((res) => res.data);
     },
   });
 
@@ -159,7 +162,23 @@ const Users = () => {
             Add User
           </Button>
         </UserFilter>
-        <Table columns={columns} dataSource={users} rowKey={"id"} />
+        <Table
+          columns={columns}
+          dataSource={users?.data}
+          rowKey={"id"}
+          pagination={{
+            total: users?.total,
+            pageSize: queryParams.perPage,
+            current: queryParams.currentPage,
+            onChange: (page) => {
+              console.log(page);
+              setQueryParams({
+                ...queryParams,
+                currentPage: page,
+              });
+            },
+          }}
+        />
         <Drawer
           title="Create user"
           width={720}
