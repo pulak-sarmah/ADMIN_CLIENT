@@ -22,10 +22,11 @@ import { FieldData, User } from "../../types";
 import { ColumnsType } from "antd/es/table";
 import { useAuthStore } from "../../store";
 import UserFilter from "./UserFilter";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import UserForm from "./forms/UserForm";
 import { PER_PAGE } from "../../constants";
+import { debounce } from "lodash";
 
 const columns: ColumnsType<User> = [
   {
@@ -122,6 +123,14 @@ const Users = () => {
     form.resetFields();
     setDrawerOpen(false);
   };
+  const debounceQUpdate = useMemo(() => {
+    return debounce((value: string | undefined) => {
+      setQueryParams((prev) => ({
+        ...prev,
+        q: value,
+      }));
+    }, 1000);
+  }, []);
   const onFilterChange = (changedFields: FieldData[]) => {
     const changedFilterFields = changedFields
       .map((item) => ({
@@ -129,12 +138,15 @@ const Users = () => {
       }))
       .reduce((acc, item) => ({ ...acc, ...item }), {});
 
-    setQueryParams((prev) => ({
-      ...prev,
-      ...changedFilterFields,
-    }));
+    if ("q" in changedFilterFields) {
+      debounceQUpdate(changedFilterFields.q);
+    } else {
+      setQueryParams((prev) => ({
+        ...prev,
+        ...changedFilterFields,
+      }));
+    }
   };
-
   if (user?.role !== "admin") {
     return <Navigate to="/" replace={true} />;
   }
