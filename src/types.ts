@@ -10,7 +10,7 @@ export type User = {
   createdAt: string;
   email: string;
   role: string;
-  tenantId: number;
+  tenant: Tenant | null;
 };
 
 export type Tenant = {
