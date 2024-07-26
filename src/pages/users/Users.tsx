@@ -136,8 +136,9 @@ const Users = () => {
       setQueryParams((prev) => ({
         ...prev,
         q: value,
+        currentPage: 1,
       }));
-    }, 1000);
+    }, 500);
   }, []);
   const onFilterChange = (changedFields: FieldData[]) => {
     const changedFilterFields = changedFields
@@ -152,6 +153,7 @@ const Users = () => {
       setQueryParams((prev) => ({
         ...prev,
         ...changedFilterFields,
+        currentPage: 1,
       }));
     }
   };
@@ -220,6 +222,8 @@ const Users = () => {
                 currentPage: page,
               });
             },
+            showTotal: (total: number, range: [number, number]) =>
+              `Showing ${range[0]}-${range[1]} of ${total} items`,
           }}
         />
         <Drawer
