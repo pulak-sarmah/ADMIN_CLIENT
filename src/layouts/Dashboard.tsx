@@ -77,7 +77,10 @@ const Dashboard = () => {
   const logoutUser = useLogoutUser();
   if (user === null) {
     return (
-      <Navigate to="/auth/login" state={{ from: location }} replace={true} />
+      <Navigate
+        to={`/auth/login?returnTo=${location.pathname}`}
+        replace={true}
+      />
     );
   }
 

@@ -6,8 +6,10 @@ const NonAuth = () => {
   const location = useLocation();
 
   if (user !== null) {
-    const from = location.state?.from?.pathname || "/";
-    return <Navigate to={from} replace={true} />;
+    const returnTo =
+      new URLSearchParams(location.search).get("returnTo") || "/";
+
+    return <Navigate to={returnTo} replace={true} />;
   }
   return (
     <div>
