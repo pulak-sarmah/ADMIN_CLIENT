@@ -6,7 +6,7 @@ import NonAuth from "./layouts/NonAuth";
 import Root from "./layouts/Root";
 import Users from "./pages/users/Users";
 import Tenants from "./pages/tenants/Tenants";
-import Products from "./pages/products/products";
+import Products from "./pages/products/Products";
 
 export const router = createBrowserRouter([
   {

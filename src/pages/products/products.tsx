@@ -1,7 +1,12 @@
-import { Breadcrumb, Flex, Space } from "antd";
+import { Breadcrumb, Button, Flex, Space, Form } from "antd";
 import { Link } from "react-router-dom";
 import { RightOutlined } from "@ant-design/icons";
-const products = () => {
+
+import { PlusOutlined } from "@ant-design/icons";
+import ProductFilter from "./ProductFilter";
+
+const Products = () => {
+  const [filterForm] = Form.useForm();
   return (
     <>
       <Space
@@ -20,9 +25,16 @@ const products = () => {
             separator=<RightOutlined />
           />
         </Flex>
+        <Form form={filterForm} onFieldsChange={() => {}}>
+          <ProductFilter>
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => {}}>
+              Add Products
+            </Button>
+          </ProductFilter>
+        </Form>
       </Space>
     </>
   );
 };
 
-export default products;
+export default Products;
