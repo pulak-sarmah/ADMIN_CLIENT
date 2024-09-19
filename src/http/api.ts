@@ -30,3 +30,6 @@ export const updateUser = (user: User, id: number) =>
 // category service
 
 export const getcategories = () => api.get(`${CATELOG_SERVICE}/categories`);
+
+export const getProducts = (queryParams: string) =>
+  api.get(`${CATELOG_SERVICE}/products?${queryParams}`);
