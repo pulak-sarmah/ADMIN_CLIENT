@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   Col,
@@ -9,12 +10,28 @@ import {
   Switch,
   Typography,
 } from "antd";
+import { getcategories, getTenants } from "../../http/api";
+import { Category, Tenant } from "../../types";
 
 type ProductFilterProps = {
   children: React.ReactNode;
 };
 
 const ProductFilter = ({ children }: ProductFilterProps) => {
+  const { data: restaurant } = useQuery({
+    queryKey: ["restaurant"],
+    queryFn: () => {
+      return getTenants(`perPage=100%currentPage=1`);
+    },
+  });
+
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => {
+      return getcategories();
+    },
+  });
+
   return (
     <Card>
       <Row justify="space-between">
@@ -29,26 +46,36 @@ const ProductFilter = ({ children }: ProductFilterProps) => {
               </Form.Item>
             </Col>
             <Col>
-              <Form.Item name="role">
+              <Form.Item name="Restaurant">
                 <Select
                   style={{ width: 100 }}
                   allowClear={true}
                   placeholder="Select Category"
                 >
-                  <Select.Option value="pizza">Pizza</Select.Option>
-                  <Select.Option value="braverage">Braverage</Select.Option>
+                  {restaurant?.data.map((restaurant: Tenant) => {
+                    return (
+                      <Select.Option value={restaurant.id} key={restaurant.id}>
+                        {restaurant.name}
+                      </Select.Option>
+                    );
+                  })}
                 </Select>
               </Form.Item>
             </Col>
             <Col>
-              <Form.Item name="role">
+              <Form.Item name="category">
                 <Select
                   style={{ width: 100 }}
                   allowClear={true}
-                  placeholder="Select Restaurant"
+                  placeholder="Select Category"
                 >
-                  <Select.Option value="aa">aa</Select.Option>
-                  <Select.Option value="bb">bb</Select.Option>
+                  {categories?.data.map((categorie: Category) => {
+                    return (
+                      <Select.Option value={categorie._id} key={categorie._id}>
+                        {categorie.name}
+                      </Select.Option>
+                    );
+                  })}
                 </Select>
               </Form.Item>
             </Col>
