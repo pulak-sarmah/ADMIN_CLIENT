@@ -10,17 +10,18 @@ import {
   Typography,
 } from "antd";
 import { Link } from "react-router-dom";
-import { RightOutlined } from "@ant-design/icons";
+import { LoadingOutlined, RightOutlined } from "@ant-design/icons";
 
 import { PlusOutlined } from "@ant-design/icons";
 import ProductFilter from "./ProductFilter";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getProducts } from "../../http/api";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PER_PAGE } from "../../constants";
-import { Product } from "../../types";
+import { FieldData, Product } from "../../types";
 import { ColumnType } from "antd/es/table";
 import { format } from "date-fns";
+import { debounce } from "lodash";
 
 const columns: ColumnType<Product>[] = [
   {
@@ -82,8 +83,8 @@ const columns: ColumnType<Product>[] = [
 const Products = () => {
   const [filterForm] = Form.useForm();
   const [queryParams, setQueryParams] = useState({
-    perPage: PER_PAGE,
-    currentPage: 1,
+    limit: PER_PAGE,
+    page: 1,
   });
 
   const {
@@ -108,7 +109,33 @@ const Products = () => {
     placeholderData: keepPreviousData,
   });
 
-  console.log(products);
+  const debounceQUpdate = useMemo(() => {
+    return debounce((value: string | undefined) => {
+      setQueryParams((prev) => ({
+        ...prev,
+        q: value,
+        page: 1,
+      }));
+    }, 500);
+  }, []);
+
+  const onFilterChange = (changedFields: FieldData[]) => {
+    const changedFilterFields = changedFields
+      .map((item) => ({
+        [item.name[0]]: item.value,
+      }))
+      .reduce((acc, item) => ({ ...acc, ...item }), {});
+
+    if ("q" in changedFilterFields) {
+      debounceQUpdate(changedFilterFields.q);
+    } else {
+      setQueryParams((prev) => ({
+        ...prev,
+        ...changedFilterFields,
+        page: 1,
+      }));
+    }
+  };
   return (
     <>
       <Space
@@ -126,8 +153,31 @@ const Products = () => {
             ]}
             separator=<RightOutlined />
           />
+          {isFetching && (
+            <Flex
+              justify="center"
+              align="center"
+              style={{
+                fontSize: "2rem",
+              }}
+            >
+              <LoadingOutlined />
+            </Flex>
+          )}
+          {isError && (
+            <Flex
+              justify="center"
+              align="center"
+              style={{
+                color: "red",
+              }}
+            >
+              {error.message}
+            </Flex>
+          )}
         </Flex>
-        <Form form={filterForm} onFieldsChange={() => {}}>
+
+        <Form form={filterForm} onFieldsChange={onFilterChange}>
           <ProductFilter>
             <Button type="primary" icon={<PlusOutlined />} onClick={() => {}}>
               Add Products
@@ -151,15 +201,15 @@ const Products = () => {
             },
           ]}
           dataSource={products?.data}
-          rowKey={"id"}
+          rowKey={"_id"}
           pagination={{
             total: products?.total,
-            pageSize: queryParams.perPage,
-            current: queryParams.currentPage,
+            pageSize: queryParams.limit,
+            current: queryParams.page,
             onChange: (page) => {
               setQueryParams({
                 ...queryParams,
-                currentPage: page,
+                page: page,
               });
             },
             showTotal: (total: number, range: [number, number]) =>
