@@ -12,12 +12,14 @@ import {
 } from "antd";
 import { getcategories, getTenants } from "../../http/api";
 import { Category, Tenant } from "../../types";
+import { useAuthStore } from "../../store";
 
 type ProductFilterProps = {
   children: React.ReactNode;
 };
 
 const ProductFilter = ({ children }: ProductFilterProps) => {
+  const { user } = useAuthStore();
   const { data: restaurant } = useQuery({
     queryKey: ["restaurant"],
     queryFn: () => {
@@ -45,23 +47,29 @@ const ProductFilter = ({ children }: ProductFilterProps) => {
                 ></Input.Search>
               </Form.Item>
             </Col>
-            <Col>
-              <Form.Item name="tenantId">
-                <Select
-                  style={{ width: 100 }}
-                  allowClear={true}
-                  placeholder="Select Category"
-                >
-                  {restaurant?.data.map((restaurant: Tenant) => {
-                    return (
-                      <Select.Option value={restaurant.id} key={restaurant.id}>
-                        {restaurant.name}
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-            </Col>
+            {user!.role === "admin" && (
+              <Col>
+                <Form.Item name="tenantId">
+                  <Select
+                    style={{ width: 100 }}
+                    allowClear={true}
+                    placeholder="Select Category"
+                  >
+                    {restaurant?.data.map((restaurant: Tenant) => {
+                      return (
+                        <Select.Option
+                          value={restaurant.id}
+                          key={restaurant.id}
+                        >
+                          {restaurant.name}
+                        </Select.Option>
+                      );
+                    })}
+                  </Select>
+                </Form.Item>
+              </Col>
+            )}
+
             <Col>
               <Form.Item name="categoryId">
                 <Select

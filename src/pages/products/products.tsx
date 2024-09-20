@@ -22,6 +22,7 @@ import { FieldData, Product } from "../../types";
 import { ColumnType } from "antd/es/table";
 import { format } from "date-fns";
 import { debounce } from "lodash";
+import { useAuthStore } from "../../store";
 
 const columns: ColumnType<Product>[] = [
   {
@@ -82,11 +83,15 @@ const columns: ColumnType<Product>[] = [
 
 const Products = () => {
   const [filterForm] = Form.useForm();
+
+  const { user } = useAuthStore();
   const [queryParams, setQueryParams] = useState({
     limit: PER_PAGE,
     page: 1,
+    tenantId:
+      user!.role === "manager" ? (user?.tenant ? user.tenant.id : 0) : 0,
   });
-
+  console.log(user);
   const {
     data: products,
     isFetching,
@@ -100,6 +105,7 @@ const Products = () => {
           (item) => item[1] !== undefined && item[1] !== null
         )
       );
+
       const queryString = new URLSearchParams(
         filterParams as unknown as Record<string, string>
       ).toString();
