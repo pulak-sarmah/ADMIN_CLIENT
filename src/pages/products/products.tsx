@@ -99,7 +99,7 @@ const Products = () => {
     limit: PER_PAGE,
     page: 1,
     tenantId:
-      user!.role === "manager" ? (user?.tenant ? user.tenant.id : 0) : 0,
+      user!.role === "manager" ? (user?.tenant ? user.tenant.id : 0) : "",
   });
 
   const {
@@ -124,6 +124,8 @@ const Products = () => {
     },
     placeholderData: keepPreviousData,
   });
+
+  console.log(products);
 
   const debounceQUpdate = useMemo(() => {
     return debounce((value: string | undefined) => {
