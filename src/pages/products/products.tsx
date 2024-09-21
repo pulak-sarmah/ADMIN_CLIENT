@@ -206,6 +206,12 @@ const Products = () => {
       );
       const postData = {
         ...form.getFieldsValue(),
+        tenantId:
+          user!.role === "manager"
+            ? user?.tenant
+              ? user.tenant.id
+              : 0
+            : form.getFieldValue("tenantId"),
         image: form.getFieldValue("image"),
         isPublish: form.getFieldValue("isPublish") ? true : false,
         categoryId,
