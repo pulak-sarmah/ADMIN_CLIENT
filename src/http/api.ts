@@ -28,8 +28,14 @@ export const updateUser = (user: User, id: number) =>
   api.patch(`${AUTH_SERVICE}/users/${id}`, user);
 
 // category service
-
 export const getcategories = () => api.get(`${CATELOG_SERVICE}/categories`);
 
 export const getProducts = (queryParams: string) =>
   api.get(`${CATELOG_SERVICE}/products?${queryParams}`);
+
+export const createProduct = (product: FormData) =>
+  api.post(`${CATELOG_SERVICE}/products`, product, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });

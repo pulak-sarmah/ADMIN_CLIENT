@@ -9,6 +9,8 @@ import {
   Upload,
   Typography,
   Switch,
+  UploadProps,
+  message,
 } from "antd";
 import { Category, Tenant } from "../../../types";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +18,7 @@ import { getcategories, getTenants } from "../../../http/api";
 import { PlusOutlined } from "@ant-design/icons";
 import Pricing from "./Pricing";
 import Attribute from "./Attribute";
+import { useState } from "react";
 
 const ProductFrom = () => {
   const selectedCategory = Form.useWatch("categoryId");
@@ -33,6 +36,27 @@ const ProductFrom = () => {
       return getTenants(`perPage=100%currentPage=1`);
     },
   });
+
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  const uploadConfig: UploadProps = {
+    name: "file",
+    multiple: false,
+    showUploadList: false,
+    beforeUpload: (file) => {
+      const isJpgOrPng =
+        file.type === "image/jpeg" || file.type === "image/png";
+      if (!isJpgOrPng) {
+        message.error("You can only upload JPG/PNG file!");
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        message.error("Image must smaller than 2MB!");
+      }
+      setImageUrl(URL.createObjectURL(file));
+      return false;
+    },
+  };
   return (
     <Row>
       <Col span={24}>
@@ -117,11 +141,21 @@ const ProductFrom = () => {
                     },
                   ]}
                 >
-                  <Upload listType="picture-card">
-                    <Space direction="vertical">
-                      <PlusOutlined />
-                      <Typography.Text>Upload</Typography.Text>
-                    </Space>
+                  <Upload listType="picture-card" {...uploadConfig}>
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt="product"
+                        style={{
+                          width: "100%",
+                        }}
+                      />
+                    ) : (
+                      <Space direction="vertical">
+                        <PlusOutlined />
+                        <Typography.Text>Upload</Typography.Text>
+                      </Space>
+                    )}
                   </Upload>
                 </Form.Item>
               </Col>

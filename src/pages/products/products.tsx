@@ -15,8 +15,13 @@ import { Link } from "react-router-dom";
 import { LoadingOutlined, RightOutlined } from "@ant-design/icons";
 import { PlusOutlined } from "@ant-design/icons";
 import ProductFilter from "./ProductFilter";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { getProducts } from "../../http/api";
+import {
+  useQuery,
+  keepPreviousData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { createProduct, getProducts } from "../../http/api";
 import { useMemo, useState } from "react";
 import { PER_PAGE } from "../../constants";
 import { FieldData, Product } from "../../types";
@@ -26,6 +31,7 @@ import { debounce } from "lodash";
 import { useAuthStore } from "../../store";
 
 import ProductFrom from "./forms/ProductFrom";
+import { makeFormData } from "./helpers";
 
 const columns: ColumnType<Product>[] = [
   {
@@ -153,8 +159,62 @@ const Products = () => {
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const queryClient = useQueryClient();
+
+  const { mutate: productMutate } = useMutation({
+    mutationKey: ["product"],
+    mutationFn: async (data: FormData) =>
+      createProduct(data).then((res) => res.data),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      form.resetFields();
+      setDrawerOpen(false);
+      return;
+    },
+  });
+
   const onHandleSubmit = async () => {
-    console.log("Submitting");
+    try {
+      await form.validateFields();
+      const priceConfiguration = form.getFieldValue("priceConfiguration");
+      const pricing = Object.entries(priceConfiguration).reduce(
+        (acc, [key, value]) => {
+          const parsedKey = JSON.parse(key);
+
+          return {
+            ...acc,
+            [parsedKey.key]: {
+              priceType: parsedKey.priceType,
+              availableOptions: value,
+            },
+          };
+        },
+        {}
+      );
+
+      const categoryId = JSON.parse(form.getFieldValue("categoryId"))._id;
+
+      const attributes = Object.entries(form.getFieldValue("attributes")).map(
+        ([key, value]) => {
+          return {
+            name: key,
+            value: value,
+          };
+        }
+      );
+      const postData = {
+        ...form.getFieldsValue(),
+        image: form.getFieldValue("image"),
+        isPublish: form.getFieldValue("isPublish") ? true : false,
+        categoryId,
+        priceConfiguration: pricing,
+        attributes,
+      };
+      const formData = makeFormData(postData);
+      await productMutate(formData);
+    } catch (errorInfo) {
+      console.log("Failed:", errorInfo);
+    }
   };
   return (
     <>
