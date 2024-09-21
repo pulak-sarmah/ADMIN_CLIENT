@@ -163,7 +163,7 @@ const Products = () => {
 
   const queryClient = useQueryClient();
 
-  const { mutate: productMutate } = useMutation({
+  const { mutate: productMutate, isPending } = useMutation({
     mutationKey: ["product"],
     mutationFn: async (data: FormData) =>
       createProduct(data).then((res) => res.data),
@@ -325,7 +325,11 @@ const Products = () => {
               >
                 Cancel
               </Button>
-              <Button type="primary" onClick={onHandleSubmit}>
+              <Button
+                type="primary"
+                onClick={onHandleSubmit}
+                loading={isPending}
+              >
                 Submit
               </Button>
             </Space>
