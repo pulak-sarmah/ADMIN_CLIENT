@@ -158,7 +158,9 @@ const ProductFrom = () => {
 
           {selectedCategory && <Pricing selectedCategory={selectedCategory} />}
 
-          {selectedCategory && <Attribute />}
+          {selectedCategory && (
+            <Attribute selectedCategory={selectedCategory} />
+          )}
 
           <Card title="Other Properties" bordered={false}>
             <Col span={24}>
