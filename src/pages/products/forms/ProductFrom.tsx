@@ -75,10 +75,7 @@ const ProductFrom = () => {
                     placeholder="Select a Category"
                   >
                     {categories?.data.map((category: Category) => (
-                      <Select.Option
-                        key={category._id}
-                        value={JSON.stringify(category)}
-                      >
+                      <Select.Option key={category._id} value={category._id}>
                         {category.name}
                       </Select.Option>
                     ))}
@@ -136,7 +133,7 @@ const ProductFrom = () => {
                     placeholder="Select a Restaurent"
                   >
                     {tenants?.data.map((tenant: Tenant) => (
-                      <Select.Option key={tenant.id} value={tenant.id}>
+                      <Select.Option key={tenant.id} value={String(tenant.id)}>
                         {tenant.name}
                       </Select.Option>
                     ))}

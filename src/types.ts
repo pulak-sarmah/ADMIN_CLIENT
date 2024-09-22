@@ -65,6 +65,7 @@ export type Product = {
   attributes: ProductAttribute[];
   isPublish: boolean;
   createdAt: string;
+  categoryId: string;
 };
 
 export type ImageField = { file: File };

@@ -34,9 +34,12 @@ const ProductImage = () => {
         message.error("Image must be smaller than 2MB!");
         return false;
       }
+      // Generate a new name for the file
+      const newFileName = `custom_name_${Date.now()}.jpg`; // or use PNG as necessary
+      const renamedFile = new File([file], newFileName, { type: file.type });
 
       // Generate an object URL for the file preview
-      const objectUrl = URL.createObjectURL(file);
+      const objectUrl = URL.createObjectURL(renamedFile);
       setFileList([{ ...file, thumbUrl: objectUrl }]); // Manually set the fileList with preview
 
       return false; // Prevent automatic upload

@@ -1,16 +1,22 @@
 import { Card, Col, Row, Space, Typography, Form, InputNumber } from "antd";
 import { Category } from "../../../types";
+import { useQuery } from "@tanstack/react-query";
+import { getCategorie } from "../../../http/api";
 
 type PricingProps = {
   selectedCategory: string;
 };
 
 const Pricing = ({ selectedCategory }: PricingProps) => {
-  const category: Category | null = selectedCategory
-    ? JSON.parse(selectedCategory)
-    : null;
+  const { data: fetchCategory } = useQuery<Category>({
+    queryKey: ["category", selectedCategory],
+    queryFn: async () => {
+      return getCategorie(selectedCategory).then((res) => res.data);
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
-  if (!category) {
+  if (!fetchCategory) {
     return null;
   }
   return (
@@ -18,7 +24,7 @@ const Pricing = ({ selectedCategory }: PricingProps) => {
       title={<Typography.Text>Product Price</Typography.Text>}
       bordered={false}
     >
-      {Object.entries(category?.priceConfiguration).map(([key, value]) => {
+      {Object.entries(fetchCategory?.priceConfiguration).map(([key, value]) => {
         return (
           <div key={key}>
             <Space direction="vertical" size="large" style={{ width: "100%" }}>

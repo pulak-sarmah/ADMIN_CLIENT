@@ -10,6 +10,7 @@ import {
   Typography,
   Drawer,
   theme,
+  message,
 } from "antd";
 import { Link } from "react-router-dom";
 import { LoadingOutlined, RightOutlined } from "@ant-design/icons";
@@ -22,7 +23,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { createProduct, getProducts } from "../../http/api";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PER_PAGE } from "../../constants";
 import { FieldData, Product } from "../../types";
 import { ColumnType } from "antd/es/table";
@@ -93,6 +94,44 @@ const columns: ColumnType<Product>[] = [
 const Products = () => {
   const [filterForm] = Form.useForm();
   const [form] = Form.useForm();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
+
+  useEffect(() => {
+    if (currentProduct) {
+      setDrawerOpen(true);
+
+      const priceConfiguration = Object.entries(
+        currentProduct.priceConfiguration
+      ).reduce((acc, [key, value]) => {
+        const stringifiedKey = JSON.stringify({
+          key: key,
+          priceType: value.priceType,
+        });
+
+        return {
+          ...acc,
+          [stringifiedKey]: value.availableOptions,
+        };
+      }, {});
+
+      const attributes = currentProduct.attributes.reduce((acc, item) => {
+        return {
+          ...acc,
+          [item.name]: item.value,
+        };
+      });
+
+      console.log(priceConfiguration);
+
+      form.setFieldsValue({
+        ...currentProduct,
+        attributes,
+        priceConfiguration,
+        categoryId: currentProduct.categoryId,
+      });
+    }
+  }, [currentProduct, form]);
 
   const { user } = useAuthStore();
   const [queryParams, setQueryParams] = useState({
@@ -124,8 +163,6 @@ const Products = () => {
     },
     placeholderData: keepPreviousData,
   });
-
-  console.log(products);
 
   const debounceQUpdate = useMemo(() => {
     return debounce((value: string | undefined) => {
@@ -159,8 +196,6 @@ const Products = () => {
     token: { colorBgLayout },
   } = theme.useToken();
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
   const queryClient = useQueryClient();
 
   const { mutate: productMutate, isPending } = useMutation({
@@ -178,6 +213,7 @@ const Products = () => {
   const onHandleSubmit = async () => {
     try {
       await form.validateFields();
+
       const priceConfiguration = form.getFieldValue("priceConfiguration");
       const pricing = Object.entries(priceConfiguration).reduce(
         (acc, [key, value]) => {
@@ -194,7 +230,7 @@ const Products = () => {
         {}
       );
 
-      const categoryId = JSON.parse(form.getFieldValue("categoryId"))._id;
+      const categoryId = form.getFieldValue("categoryId");
 
       const attributes = Object.entries(form.getFieldValue("attributes")).map(
         ([key, value]) => {
@@ -204,6 +240,7 @@ const Products = () => {
           };
         }
       );
+
       const postData = {
         ...form.getFieldsValue(),
         tenantId:
@@ -221,6 +258,7 @@ const Products = () => {
       const formData = makeFormData(postData);
       await productMutate(formData);
     } catch (errorInfo) {
+      message.error("something went wrong");
       console.log("Failed:", errorInfo);
     }
   };
@@ -283,10 +321,15 @@ const Products = () => {
             ...columns,
             {
               title: "Actions",
-              render: () => {
+              render: (_, record: Product) => {
                 return (
                   <Space>
-                    <Button type="link" onClick={() => {}}>
+                    <Button
+                      type="link"
+                      onClick={() => {
+                        setCurrentProduct(record);
+                      }}
+                    >
                       Edit
                     </Button>
                   </Space>
