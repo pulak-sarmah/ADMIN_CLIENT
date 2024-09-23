@@ -1,77 +1,55 @@
-import {
-  Upload,
-  Space,
-  Typography,
-  message,
-  UploadProps,
-  Form,
-  UploadFile,
-} from "antd";
+import { Form, message, Space, Typography, Upload, UploadProps } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-const ProductImage = () => {
-  // State to manage the file list
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+const ProductImage = ({ initialImage }: { initialImage: string }) => {
+  const [messageApi, contextHolder] = message.useMessage();
+  const [imageUrl, setImageUrl] = useState<string | null>(initialImage);
 
-  const uploadConfig: UploadProps = {
+  const uploaderConfig: UploadProps = {
     name: "file",
     multiple: false,
-    fileList, // Pass the fileList state here
-    onChange: ({ fileList: newFileList }) => {
-      setFileList(newFileList); // Update file list when user adds/removes files
-    },
+    showUploadList: false,
     beforeUpload: (file) => {
+      // Validate file type
       const isJpgOrPng =
         file.type === "image/jpeg" || file.type === "image/png";
       if (!isJpgOrPng) {
-        message.error("You can only upload JPG/PNG files!");
+        messageApi.error("You can only upload JPG/PNG files!");
         return false;
       }
 
+      // Validate file size (< 2MB)
       const isLt2M = file.size / 1024 / 1024 < 2;
       if (!isLt2M) {
-        message.error("Image must be smaller than 2MB!");
+        messageApi.error("Image must be smaller than 2MB!");
         return false;
       }
-      // Generate a new name for the file
-      const newFileName = `custom_name_${Date.now()}.jpg`; // or use PNG as necessary
-      const renamedFile = new File([file], newFileName, { type: file.type });
 
-      // Generate an object URL for the file preview
-      const objectUrl = URL.createObjectURL(renamedFile);
-      setFileList([{ ...file, thumbUrl: objectUrl }]); // Manually set the fileList with preview
+      // Create a preview URL for the selected file
+      setImageUrl(URL.createObjectURL(file));
 
-      return false; // Prevent automatic upload
-    },
-    onRemove: () => {
-      setFileList([]); // Clear the file list when the user removes the image
+      // Prevent actual upload
+      return false;
     },
   };
 
-  // Clean up object URLs when the component unmounts
-  useEffect(() => {
-    return () => {
-      fileList.forEach((file) => {
-        if (file.thumbUrl) {
-          URL.revokeObjectURL(file.thumbUrl);
-        }
-      });
-    };
-  }, [fileList]);
-
   return (
     <Form.Item
+      label=""
       name="image"
       rules={[
         {
           required: true,
-          message: "Product image is required",
+          message: "Please upload a product image",
         },
       ]}
     >
-      <Upload listType="picture-card" {...uploadConfig}>
-        {fileList.length >= 1 ? null : (
+      <Upload listType="picture-card" {...uploaderConfig}>
+        {contextHolder}
+        {imageUrl ? (
+          <img src={imageUrl} alt="product" style={{ width: "100%" }} />
+        ) : (
           <Space direction="vertical">
             <PlusOutlined />
             <Typography.Text>Upload</Typography.Text>

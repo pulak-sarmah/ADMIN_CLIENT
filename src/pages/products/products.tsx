@@ -22,7 +22,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { createProduct, getProducts } from "../../http/api";
+import { createProduct, getProducts, updateProduct } from "../../http/api";
 import { useEffect, useMemo, useState } from "react";
 import { PER_PAGE } from "../../constants";
 import { FieldData, Product } from "../../types";
@@ -200,8 +200,13 @@ const Products = () => {
 
   const { mutate: productMutate, isPending } = useMutation({
     mutationKey: ["product"],
-    mutationFn: async (data: FormData) =>
-      createProduct(data).then((res) => res.data),
+    mutationFn: async (data: FormData) => {
+      if (currentProduct) {
+        return updateProduct(data, currentProduct._id).then((res) => res.data);
+      } else {
+        return createProduct(data).then((res) => res.data);
+      }
+    },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       form.resetFields();
@@ -355,12 +360,13 @@ const Products = () => {
         />
 
         <Drawer
-          title={"Add Product"}
+          title={!currentProduct ? "Add Product" : "Edit Product"}
           width={720}
           destroyOnClose={true}
           open={drawerOpen}
           styles={{ body: { background: colorBgLayout } }}
           onClose={() => {
+            setCurrentProduct(null);
             form.resetFields();
             setDrawerOpen(false);
           }}
@@ -368,6 +374,7 @@ const Products = () => {
             <Space>
               <Button
                 onClick={() => {
+                  setCurrentProduct(null);
                   setDrawerOpen(false);
                   form.resetFields();
                 }}
@@ -385,7 +392,7 @@ const Products = () => {
           }
         >
           <Form layout="vertical" form={form}>
-            <ProductFrom />
+            <ProductFrom form={form} />
           </Form>
         </Drawer>
       </Space>

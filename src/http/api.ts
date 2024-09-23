@@ -42,3 +42,10 @@ export const createProduct = (product: FormData) =>
       "Content-Type": "multipart/form-data",
     },
   });
+
+export const updateProduct = (product: FormData, id: string) =>
+  api.patch(`${CATELOG_SERVICE}/products/${id}`, product, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
